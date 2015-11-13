@@ -1,8 +1,4 @@
 class ShoppingListPage < BasePage
-#Zadanie GUI_3:
-# TODO: W tej klasie coś jest nie tak. Odpal testy za pomocą 'RUN_GUI_TESTS.bat'
-#       i przeanalizuj komunikaty błędów.
-
   include Ajax
 
   def initialize(session)
