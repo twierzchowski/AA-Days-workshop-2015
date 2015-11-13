@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem 'rspec'
+gem 'bundler'
+gem 'cucumber'
+gem 'selenium-webdriver',   '~> 2.45.0'
+gem 'capybara',             '~> 2.4.4'

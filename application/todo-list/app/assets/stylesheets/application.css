@@ -1,0 +1,344 @@
+/*
+ *
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require_tree .
+ */
+
+/* clearfix */
+.cf:before,
+.cf:after {
+    content: " ";
+    display: table;
+}
+
+.cf:after {
+    clear: both;
+}
+
+.hidden {
+  display: none;
+}
+
+.invalid {
+  box-shadow: inset 1px 1px 6px 0 rgb(255,0,0), inset -1px -1px 6px 0 rgb(255,0,0);
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+}
+
+body {
+  font-family: 'Source Sans', helvetica, arial, sans-serif;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  background: #269E8E;
+}
+
+.app {
+  color: #F0F1F1;
+  background: #269E8E;
+  min-width: 250px;
+  position: relative;
+}
+
+.app.dark a,
+.app.dark a:hover,
+.app.dark a:active,
+.app.dark a:visited {
+  color: #F0F1F1;
+  text-decoration: none;
+}
+
+.app h1 {
+  font-weight: 300;
+}
+
+
+#wrapper {
+  width: 100%;
+  overflow-x: hidden;
+  background: inherit;
+  position: relative;
+}
+#site {
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  background: inherit;
+  left: 0;
+  transition: all 0.2s ease-out;
+  -webkit-transition: all 0.2s ease-out;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+#site:before{
+  position: absolute;
+  content: '';
+  left: -4px;
+  height: 100%;
+  width: 4px;
+  background: #3B3E3E;
+}
+#site.open {
+  transform: translate3d(250px, 0, 0);
+  -webkit-transform: translate3d(250px, 0, 0);
+}
+pre {
+  font-family: source-code-pro, sans-serif;
+  font-size: 12px;
+}
+
+/* Main Header */
+.main-header {
+  color: #373435;
+  background: #fff;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  position: relative;
+}
+.main-header h1 {
+  font-size: 40px;
+  margin: 5px 0 0;
+  letter-spacing: -.065em;
+  line-height: 1.1em;
+}
+.main-header a {
+  color: #464646;
+  text-decoration: none;
+}
+.main-header a:hover {
+  color: #000;
+}
+.main-header p {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+.main-header nav {
+  display: none;
+}
+
+.notice,
+.alert {
+  background: rgba(0,0,0,0.8);
+  border-radius: 20px;
+  box-sizing: border-box;
+  display: none;
+  padding: 3rem;
+  left: 12%;
+  position: absolute;
+  top: 4rem;
+  width: 76%;
+}
+
+.transition,
+.transition:before {
+    -webkit-transition: all .2s;
+}
+
+.pressable:active,
+.pressable:active:before {
+    padding-top: 1px;
+}
+
+.segment-divider {
+    border-color: #58595A;
+    margin: 1em;
+}
+
+.section-title span {
+  display: inline-block;
+
+  vertical-align: middle;
+  margin-bottom: 5px;
+
+  max-width: 30%;
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media screen and (min-width: 650px) {
+  #site.open {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+  .main-header nav {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 40px;
+  }
+  .main-header ul {
+    list-style: none;
+  }
+  .main-header nav li {
+    display: inline-block;
+    margin: 0 18px;
+  }
+  .main-header nav li#download-btn {
+    display: none;
+  }
+  .main-header nav li a {
+    text-decoration: none;
+    font-size: 20px;
+    color: #7F7F7F;
+  }
+  .main-header nav li.selected a {
+    color: #373435;
+  }
+  #slide-menu-button{
+    display: none;
+  }
+  .main-header h1 {
+    font-size: 5em;
+  }
+
+  .main-header {
+    color: #373435;
+    background: #fff;
+  }
+  #content {
+    padding-left: 240px;
+  }
+  /* Side Nav */
+  #sideNav {
+    background: transparent;
+    width: 220px;
+    z-index: 20;
+    left: 10px;
+    top: 150px;
+    height: auto;
+  }
+  #sideNav nav.site {
+    display: none;
+  }
+  #sideNav .combo {
+    border-bottom: none;
+    padding: 36px 0;
+  }
+  #sideNav li a {
+    padding: 12px 0 0 10px;
+  }
+  body.light #sideNav li a {
+    color: #797B7B;
+  }
+  body.light #pageNav li {
+    border-bottom: 1px solid #E0E0E0;
+  }
+  select.docNav {
+    background: #595B5B;
+    box-shadow: 0 0 0 1px #303233;
+    border: none;
+    border-top: 2px solid #666767;
+    color: #FFF;
+    text-shadow: 0 -1px 0 #000;
+    padding: 3px 20px 4px 8px;
+    -webkit-appearance: none;
+  }
+  body.light select.docNav {
+    box-shadow: 0 0 0 1px #949696;
+    background: #DDE1E1;
+    border-top: 1px solid #FFF;
+    color: #454545;
+    text-shadow: 0 -1px 0 #FFF;
+    width: 192px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  body {
+    background: #92D69D !important;
+  }
+
+  .app {
+    border: 1px solid white;
+    border-radius: 20px;
+    margin: auto;
+    margin-top: 1em;
+    width: 40%;
+  }
+
+  .control-group {
+    height: 3rem;
+  }
+
+  .section-title {
+    font-weight: 300;
+    font-size: 2rem;
+  }
+
+  .main-header {
+    border-top-right-radius: 16px;
+    border-top-left-radius: 16px;
+  }
+}
+
+@media screen and (min-width: 940px) {
+  .main-header nav li#download-btn {
+    display: inline-block;
+  }
+  .main-header nav li a#download-btn{
+    position:relative;
+    top: -15px;
+    display:inline-block;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    background-clip:padding-box;
+    font:inherit;
+    background:transparent;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    user-select:none;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+    font-size:16px;
+    line-height:3rem;
+    letter-spacing:1px;
+    color:#454545;
+    text-shadow:0 1px #fff;
+    vertical-align:top;
+    background-color:#e5e9e8;
+    box-shadow:inset 0 1px #fff;
+    border:1px solid #a5a8a8;
+    border-radius:6px;
+    margin:0;
+    padding:0 1.25rem;
+  }
+  .main-header nav li a#download-btn, .main-header nav li a#download-btn:hover {
+    border:1px solid #143250;
+    background-color:#288edf;
+    box-shadow:inset 0 1px rgba(255,255,255,0.36);
+    color:#fff;
+    font-weight:500;
+    text-shadow:0 -1px rgba(0,0,0,0.36);
+  }
+  .main-header nav li a#download-btn:hover {
+    background-color:#2f9cf3;
+  }
+  .main-header nav li a#download-btn:active, .main-header nav li a#download-btn.is-active {
+    background-color:#0380e8;
+    box-shadow:inset 0 1px rgba(0,0,0,0.12);
+  }
+  .main-header nav li a#download-btn:disabled, .main-header nav li a#download-btn.is-disabled {
+    opacity:.3;
+    cursor:default;
+    pointer-events:none;
+  }
+}
+

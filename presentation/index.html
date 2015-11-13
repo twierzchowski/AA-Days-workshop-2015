@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      Zwinność w automatyzacji
+    </title>
+
+    <meta name="author"
+          content="Korneliusz Caputa, Wojciech Gawroński, Kamila Kupidura, Daniel Dec, Tomasz Wierzchowski" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <link href="//fonts.googleapis.com/css?family=Roboto+Slab|Roboto&amp;subset=latin,latin-ext"
+          rel="stylesheet" type="text/css" />
+
+    <link rel="stylesheet" href="css/reveal.css" />
+    <link rel="stylesheet" href="css/TangleKit.css" />
+    <link rel="stylesheet" href="css/theme/default.css" id="theme" />
+
+    <link rel="stylesheet" href="lib/css/github.css" />
+
+    <script src="js/raphael.js"></script>
+    <script src="js/raphael.group.js"></script>
+    <script src="js/raphael.tachometer.min.js"></script>
+
+    <script src="js/popup.js"></script>
+    <script src="js/Tangle.js"></script>
+    <script src="js/mootools.js"></script>
+    <script src="js/sprintf.js"></script>
+    <script src="js/BVTouchable.js"></script>
+    <script src="js/TangleKit.js"></script>
+
+    <script src="js/countdown.js"></script>
+    <script>
+      var RAD = Math.PI / 180;
+
+      function getRandomArbitary(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function createRectPath(x, y, a) {
+        return "M" + x + "," + y + "l" + a + ",0 0," + a + "-" + a + ",0z";
+      }
+
+      function createTrianglePath(x, y, a) {
+        return "M" + x + "," + y + "l" + a / 2 + "," + a + " -" + a + ",0z";
+      }
+
+      function createRightArrowPath(x, y) {
+        return "M" + x + "," + y + "m-10-10l40,0 0-6 20,16 -20,16 0-6 -40,0 -0-16z"
+      }
+
+      function createGearboxPath() {
+        return "M295.186,122.908c12.434,18.149,32.781,18.149,45.215,0l12.152-17.736c12.434-18.149,22.109-15.005,21.5,6.986l-0.596,21.49c-0.609,21.992,15.852,33.952,36.579,26.578l20.257-7.207c20.728-7.375,26.707,0.856,13.288,18.29l-13.113,17.037c-13.419,17.434-7.132,36.784,13.971,43.001l20.624,6.076c21.103,6.217,21.103,16.391,0,22.608l-20.624,6.076c-21.103,6.217-27.39,25.567-13.971,43.001l13.113,17.037c13.419,17.434,7.439,25.664-13.287,18.289l-20.259-7.207c-20.727-7.375-37.188,4.585-36.578,26.576l0.596,21.492c0.609,21.991-9.066,25.135-21.5,6.986L340.4,374.543c-12.434-18.148-32.781-18.148-45.215,0.001l-12.152,17.736c-12.434,18.149-22.109,15.006-21.5-6.985l0.595-21.492c0.609-21.991-15.851-33.951-36.578-26.576l-20.257,7.207c-20.727,7.375-26.707-0.855-13.288-18.29l13.112-17.035c13.419-17.435,7.132-36.785-13.972-43.002l-20.623-6.076c-21.104-6.217-21.104-16.391,0-22.608l20.623-6.076c21.104-6.217,27.391-25.568,13.972-43.002l-13.112-17.036c-13.419-17.434-7.439-25.664,13.288-18.29l20.256,7.207c20.728,7.374,37.188-4.585,36.579-26.577l-0.595-21.49c-0.609-21.992,9.066-25.136,21.5-6.986L295.186,122.908z";
+      }
+
+      function font(color) {
+        return {
+          "font": "18px 'Helvetica Neue', Arial",
+          "font-weight": "bold",
+          "fill": color
+        };
+      }
+
+      function createArcPath(cx, cy, r, startAngle, endAngle) {
+        var x1 = cx + r * Math.cos(-startAngle * RAD),
+            x2 = cx + r * Math.cos(-endAngle * RAD),
+            y1 = cy + r * Math.sin(-startAngle * RAD),
+            y2 = cy + r * Math.sin(-endAngle * RAD);
+
+        return ["M", cx, cy, "L", x1, y1, "A", r, r, 0, +(endAngle - startAngle > 180), 0, x2, y2, "z"];
+      }
+
+      function spinner(r, centerx, centery, spinnerId, R1, R2, count, stroke_width, colour) {
+        var sectorsCount = count || 12,
+            color = colour || "#888",
+            group = r.group(),
+            width = stroke_width || 5,
+            r1 = Math.min(R1, R2) || 10,
+            r2 = Math.max(R1, R2) || 25,
+            cx = centerx + r2 + width,
+            cy = centery + r2 + width,
+
+            sectors = [],
+            opacity = [],
+            beta = 2 * Math.PI / sectorsCount,
+
+            pathParams = { stroke: color, "stroke-width": width, "stroke-linecap": "round" };
+
+        Raphael.getColor.reset();
+
+        if (spinnerId) {
+          group.id(spinnerId);
+        }
+
+        for (var i = 0; i < sectorsCount; i++) {
+          var alpha = beta * i - Math.PI / 2,
+              cos = Math.cos(alpha),
+              sin = Math.sin(alpha);
+
+          opacity[i] = 1 / sectorsCount * i;
+          sectors[i] = r.path([["M", cx + r1 * cos, cy + r1 * sin], ["L", cx + r2 * cos, cy + r2 * sin]])
+                        .attr(pathParams);
+
+          group.push(sectors[i]);
+
+          sectors[i].attr("data-name", "sectors");
+
+          if (color == "rainbow") {
+            sectors[i].attr("stroke", Raphael.getColor());
+          }
+        }
+
+        var tick;
+
+        (function ticker() {
+          opacity.unshift(opacity.pop());
+
+          for (var i = 0; i < sectorsCount; i++) {
+            sectors[i].attr("opacity", opacity[i]);
+          }
+
+          r.safari();
+          tick = setTimeout(ticker, 1000 / sectorsCount);
+        } ());
+
+        return function () {
+          clearTimeout(tick);
+
+          for (var i = 0; i < sectorsCount; i++) {
+            sectors[i].remove();
+          }
+        };
+      }
+
+      Raphael.fn.arrow = function (x, y) {
+          return this.path(["M", x, y ] + "m-10-10l20,0 0-6 10,16 -10,16 0-6 -20,0 0,6 -10-16 10-16z")
+                     .attr({ fill: "#fff", stroke: "none", "stroke-dasharray": "-", "fill-opacity": 0.2 });
+      };
+
+      Raphael.fn.rightArrow = function (x, y) {
+          return this.path(createRightArrowPath(x, y))
+                     .attr({ fill: "#fff", stroke: "none", "stroke-dasharray": "-", "fill-opacity": 0.5 });
+      };
+
+      Raphael.fn.gearBox = function() {
+          return this.path(createGearboxPath())
+                     .attr({ stroke: "#666", opacity: 0.9, "stroke-width": 10 });
+      };
+
+      Raphael.fn.thinArrow = function(x1, y1, x2, y2, size) {
+        var angle = Raphael.angle(x1, y1, x2, y2);
+            a45   = Raphael.rad(angle - 45),
+            a45m  = Raphael.rad(angle + 45),
+            a135  = Raphael.rad(angle - 135),
+            a135m = Raphael.rad(angle + 135),
+            x1a = x1 + Math.cos(a135) * size,
+            y1a = y1 + Math.sin(a135) * size,
+            x1b = x1 + Math.cos(a135m) * size,
+            y1b = y1 + Math.sin(a135m) * size,
+            x2a = x2 + Math.cos(a45) * size,
+            y2a = y2 + Math.sin(a45) * size,
+            x2b = x2 + Math.cos(a45m) * size,
+            y2b = y2 + Math.sin(a45m) * size;
+
+        return this.path("M" + x1 + " " + y1 + "L" + x1a + " " + y1a + "M" + x1 + " " + y1 + "L" + x1b + " " + y1b +
+                         "M" + x1 + " " + y1 + "L" + x2 +  " " + y2 +
+                         "M" + x2 + " " + y2 + "L" + x2a + " " + y2a + "M" + x2 + " " + y2 + "L" + x2b + " " + y2b);
+      };
+
+      Raphael.fn.drawAnnotatedSlice = function(x, y, size, text, color, width, yOffset) {
+        var height = 20;
+
+        width = width || 1;
+        yOffset = yOffset || 0;
+
+        this.text(x + (size / 2), y - 65 - yOffset, text).attr(font(white));
+
+        this.path("M" + x + " " + y + "L" + (x + size) + " " + y).attr({ "stroke": color, "stroke-width": 10 });
+
+        this.path("M" + (x + size) + " " + (y - height) + "L" + (x + size) + " " + (y + height))
+            .attr({ "stroke": color, "stroke-width": width });
+
+        this.path("M" + x + " " + (y - height) + "L" + x + " " + (y + height))
+            .attr({ "stroke": color, "stroke-width": width });
+      };
+
+      var dashed = { fill: "none", stroke: "#666", "stroke-dasharray": "- " },
+          black = "#333",
+          gray = "#888",
+          white = "#ffffff",
+          red = "#ff0000",
+          green = "#00ff00",
+          yellow = "#ffff00",
+          lightBlue = "#00ffff",
+          nodeGreen = "#8CC84B";
+    </script>
+    <script>
+      document.write("<link rel='stylesheet' href='css/print/" +
+                     (window.location.search.match(/print-pdf/gi) ? "pdf" : "paper") +
+                    ".css' type='text/css' media='print'>");
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section id="intro">
+          <h2>Zwinność w automatyzacji</h2>
+          <h4>Agile & Automation Days 16.11.2015</h4>
+          <span class="license">
+            License:
+            <a href="http://creativecommons.org/licenses/by-nd/3.0/pl/">CC BY-ND 3.0 PL</a>
+          </span>
+        </section>
+
+        <section id="user_story">
+
+          <section>
+            <h2><em>Pracujemy w Agile</em></h2>
+            <h3>Pracujemy z klientem</h3>
+
+            <img src="img/AgileUCD.jpg" alt="Agile + UX = UCD" />
+          </section>
+
+          <section>
+            <h2>Co dostarcza <em>UCD</em>?</h2>
+
+            <div>Informację, do czego system ma służyć</div>
+            <div>Persony, czyli informacje kim są użytkownicy</div>
+            <div>Informację o umiejętnościach użytkowników</div>
+
+          </section>
+
+          <section>
+            <h2>Persona</h2>
+
+            <ul>
+              <li>Zdjęcie</li>
+              <li>Opis - wiek, zawód, krótkie wprowadzenie</li>
+              <li>Potrzeby</li>
+              <li>Cele</li>
+              <li>Czego nie lubi?</li>
+            </ul>
+
+          </section>
+
+          <section>
+            <h2>Korzyści posiadania <em>persony</em></h2>
+
+            <ul>
+              <li>Użytkownik staje się namacalny</li>
+              <li>Odwołujemy się do konkretnej osoby</li>
+              <li>Nie mówimy <em>użytkownik</em></li>
+              <li>Wykorzystujemy je do tworzenia <em>user stories</em></li>
+            </ul>
+
+          </section>
+
+          <section>
+            <h2><em>User Story</em></h2>
+
+            <ul>
+              <li>Technika opisywania wymagań</li>
+              <li>Krótkie <em>historyjki</em> opisujące akcje do wykonania w systemie</li>
+              <li>Zrozumiałe dla zespołu i dla klientów</li>
+              <li>Ważne są cele użytkownika, nie właściwości systemu</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Konstrukcja <em>user story</em></h2>
+
+            <ol>
+              <li><strong>Jako</strong> &rarr; persona</li>
+              <li><strong>Chcę</strong> &rarr; wykonać akcję - <strong>ale nie rozwiązanie!</strong></li>
+              <li><strong>Żeby</strong> &rarr; osiągnąć coś ważnego dla mnie</li>
+            </ol>
+          </section>
+
+          <section>
+            <h2>Wymagania <small>vs</small> <em>user story</em></h2>
+
+            <ul>
+              <li>Produkt powinien być biały</li>
+              <li>Produkt powinien być podłączony do prądu</li>
+              <li>Produkt powinien opiekać z góry i z dołu</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Czy to jest to czego klient chciał?</h3>
+            <img src="img/Oven.jpg" alt="Piekarnik" />
+          </section>
+
+      <section>
+        <h2>Popełniliśmy typowe błędy!</h2>
+        <ul>
+        <li>Technikalia</li>
+        <li>Produkt zamiast doświadczeń użytkownika</li>
+        <li>Parametry i cechy zamiast zachowań</li>
+        <li>Sugerowanie rozwiązania</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>User story</h2>
+        <h3>charakterystyka</h3>
+        <ul>
+          <li>Independent</li>
+          <li>Negotiable</li>
+          <li>Valuable</li>
+          <li>Estimatable</li>
+          <li>Small</li>
+          <li>Testable</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Wymagania <small>vs</small> <em>user story</em></h2>
+
+        <p>
+          <strong>Jako</strong> Kamila,<br/>
+          <strong>Chcę</strong> zjeść tosta z serem w środku,<br/>
+          <strong>Żeby</strong> zaspokoić głód
+        </p>
+
+        <img class="fragment" src="img/Toaster.jpg" alt="Toster" />
+      </section>
+      <section>
+        <h3>Czy poniższe Uesr Story są poprawne?</h3>
+      </section>
+      <section>
+        "As a coffee addict , I want to drink some coffee, so that i got hyper speed all the day"
+      </section>
+      <section>
+        "Given kawa, cukier, kubek, łyżeczka i zagotowana woda jest na stole<br>
+When użytkownik wsypie kawę do kubka<br>
+And użytkownik zaleje kawę wrzątkiem<br>
+And użytkownik doda cukier<br>
+And użytkownik pomiesza wszystkie składniki łyżeczką<br>
+Then kawa jest gotowa do picia"<br>
+      </section>
+      <section>
+      "Jako kelnerka<br>
+Chcę przygotować kawę<br>
+Żeby sprzedać ją klientowi"<br>
+      </section>
+    </section>
+        <section>
+          <section>
+            <h1>Persona</h1>
+            <h3>Matylda Kocur</h3>
+
+            <img src="img/matylda_kocur.jpg" alt="Klient" width="380" />
+          </section>
+
+          <section>
+            <img src="img/matylda_kocur.jpg" class="stick" width="150" height="170" alt="Klient" />
+
+            <ul class="no-bullets text_width">
+              <li><b>DANE:</b>Matylda Kocur</li>
+              <li><b>ZAWÓD:</b>Sekretarka</li>
+              <li><b>WIEK:</b>33 lata</li>
+              <li><b>ADRES:</b>Gliwice</li>
+              <li><b>WYKSZTAŁCENIE:</b><br/>Studia magisterskie - Chemia</li>
+              <li>
+                <b>ŻYCIE OSOBISTE:</b>
+                <ul>
+                    <li>Zamężna</li>
+                    <li>Dwoje dzieci (4 i 6 lat)</li>
+                    <li>Uwielbia robić zakupy</li>
+                    <li>Lubi podróże</li>
+                </ul>
+              </li>
+              <li><b>HOBBY:</b>Zakupy, Podróże, Dzieci</li>
+              <li><b>MOTTO:</b> <q>Czas to pieniądz.</q></li>
+            </ul>
+          </section>
+
+          <section>
+            <img src="img/matylda_kocur.jpg" class="stick" width="150" height="170" alt="Klient" />
+
+            <ul class="no-bullets text_width">
+              <li>
+                <b>NIE LUBI:</b>
+                <ul>
+                    <li>Zapominać</li>
+                    <li>Nie mieć planu</li>
+                </ul>
+              </li>
+              <li>
+                <b>CECHY / OTOCZENIE:</b>
+                <ul>
+                    <li>Perfekcyjna pani domu</li>
+                    <li>Nowoczesna</li>
+                    <li>Konkretna</li>
+                </ul>
+              </li>
+              <li>
+                <b>OCZEKIWANIA:</b>
+                <ul>
+                    <li>Pomocna dłoń w codziennych zakupach zarówno w pracy jak i w domu</li>
+                    <li>Łatwość zapisywania zakupów</li>
+                    <li>Zawsze pod ręką.</li>
+                </ul>
+              </li>
+            </ul>
+
+          </section>
+
+          <section>
+            <q class="nicer-container">
+              Nasz klient to przebojowa kobieta pracująca jako sekretarka, która ma na głowie masę obowiązków, zarówno zawodowych jak i prywatnych.
+            </q>
+            <q class="nicer-container">
+              Chce być uznawana za świetnego pracownika jak i perfekcyjną panią domu, każde nawet najmniejsze potknięcie odbiera jako porażkę.
+              Potrzebuje pomocy w tworzeniu planu obowiązków.
+            </q>
+            <q class="nicer-container">
+              Dzięki nowej aplikacji nie będzie musiała tłumaczyć się przed szefem z braku kawy jak i przed głodnym mężem w domu.
+            </q>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section class="assignment">
+            <h2>Zbieramy wymagania!</h2>
+            <h3>Rozmowa z <em>product ownerem</em></h3>
+
+            <time id="us-assignment-timer" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">10</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("us-assignment-timer");
+
+                element.addEventListener("click", createTimer(element, minutes(10)));
+              } ());
+            </script>
+          </section>
+          
+          <section class="solution">
+            <h2>Zadanie 1</h2>
+            <h3>Użytkownik może się zalogować na własne konto</h3>
+
+            <p class="fragment nicer-container">
+              <strong>Jako</strong> Matylda,<br>
+              <strong>Chcę</strong> się zalogować do aplikacji,<br>
+              <strong>Żeby</strong> zobaczyć swoje listy zakupów
+            </p>
+
+            <time id="us-1" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">05</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("us-1");
+
+                element.addEventListener("click", createTimer(element, minutes(5)));
+              } ());
+            </script>
+
+          </section>
+
+          <section class="solution">
+            <h2>Zadanie 2</h2>
+            <h3>Lista zakupów jest zamknięta kiedy wszystkie jej elementy są oznaczone jako kupione</h3>
+
+            <p class="fragment nicer-container">
+              <strong>Jako</strong> Matylda,<br/>
+              <strong>Chcę</strong> zamknąć wszystkie elementy znajdujące się na liście,<br/>
+              <strong>Żeby</strong> lista została automatycznie zamknięta i nie wprowadzała mnie w błąd
+            </p>
+
+            <time id="us-2" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">05</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("us-2");
+
+                element.addEventListener("click", createTimer(element, minutes(5)));
+              } ());
+            </script>
+          </section>
+
+          <section class="solution">
+            <h2>Zadanie 3</h2>
+            <h3>Zamknięta lista zakupów jest niedostępna dla użytkownika</h3>
+
+            <p class="fragment nicer-container">
+              <strong>Jako</strong> Matylda,<br>
+              <strong>Chcę</strong> aby moje zamknięte listy zakupów nie były widoczne,<br>
+              <strong>Żeby</strong> nie wprowadzały mnie w błąd
+            </p>
+
+            <time id="us-3" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">05</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("us-3");
+
+                element.addEventListener("click", createTimer(element, minutes(5)));
+              } ());
+            </script>
+          </section>
+        </section>
+
+        <section>
+
+          <section>
+            <h2>Język Domenowy</h2>
+            <h3>Kto? Co? Kiedy?</h3>
+          </section>
+
+          <section>
+            <h2>Przykład</h2>
+
+            <ul>
+              <li>Rzecz kupiona / Produkt zamówiony</li>
+              <li>Rzecz do kupienia / Brakujący produkt</li>
+              <li>Zamknięta lista</li>
+              <li>Otwarta lista</li>
+            </ul>
+
+          </section>
+
+        </section>
+<section>
+
+          <section class="break">
+            <h1>Przerwa</h1>
+
+            <time id="first-break" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">05</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("first-break");
+
+                element.addEventListener("click", createTimer(element, minutes(5)));
+              } ());
+            </script>
+
+          </section>
+
+        </section>
+      
+
+        <section>
+
+          <section data-pyramid="true" data-pyramid-active="3">
+            <h2>BDD</h2>
+
+            <div class="svg-placeholder"></div>
+
+          </section>
+
+          <section>
+            <h2>BDD</h2>
+
+            <ul>
+              <li>Sposób zapisu</li>
+              <li>Mocno zorientowany na Agile</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>BDD</h2>
+
+            <p class="nicer-container">
+              Opis funkcjonalności i logiki biznesowej z punktu widzenia dostarczonej wartości dla klienta.
+            </p>
+            <p class="nicer-container">
+              To właśnie jeden ze sposobów opisu szczegółów technicznych w języku domenowym, zrozumiałym nawet dla nietechnicznego klienta.
+            </p>
+          </section>
+
+          <section>
+            <h2>BDD - Formaty</h2>
+
+            <ul>
+              <li>
+                Connextra
+                <ul>
+                  <li><pre><code>AS A ... jako kto
+I WANT ... wykonać cel
+SO THAT ... osiągnąć korzyść</code></pre></li>
+                </ul>
+              </li>
+              <li>
+                Feature Injection
+                <ul>
+                  <li><pre><code>IN ORDER TO ... osiągnąć korzyść
+AS A ... jako kto
+I WANT ... czynność / cel</code></pre></li>
+                </ul>
+              </li>
+              <li>
+                Given/When/Then
+                <ul>
+                  <li>
+                    <pre><code>GIVEN ... warunki początkowe
+WHEN ... wykonując czynności
+THEN ... weryfikacja</code></pre>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Cykl BDD</h2>
+            <img src="img/BDD.png" alt="Cykl BDD" />
+          </section>
+
+          <section>
+            <img class="white-background" src="img/mvc.png" alt="Model MVC" />
+            <img class="white-background" src="img/mvc_testy.png" alt="Model MVC - testy" />
+          </section>
+
+          <section class="assignment">
+            <h1>Zadanie</h1>
+
+            <time id="bdd-assignment" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">30</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("bdd-assignment");
+
+                element.addEventListener("click", createTimer(element, minutes(30)));
+              } ());
+            </script>
+
+          </section>
+
+        </section>
+
+        <section>
+
+          <section class="break">
+            <h1>Przerwa</h1>
+
+            <time id="second-break" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">05</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("second-break");
+
+                element.addEventListener("click", createTimer(element, minutes(5)));
+              } ());
+            </script>
+
+          </section>
+
+        </section>
+
+        <section>
+
+          <section data-pyramid="true" data-pyramid-active="0">
+            <h2>Automated GUI tests</h2>
+
+            <div class="svg-placeholder"></div>
+          </section>
+
+          <section>
+            <h2>Automated GUI tests</h2>
+
+            <ul>
+              <li>Zautomatyzowane scenariusze testowe.</li>
+              <li>Nie za dobry stosunek: <strong><sup>KOSZT</sup> / <sub>ZYSK</sub></strong></li>
+            <!-- <li>Głównie testy eksploracyjne.</li> WTF?-->
+            </ul>
+
+          </section>
+
+          <section>
+            <h2>GUI - Test Runner</h2>
+
+            <img class="big" src="img/PageObjectDiagram.png" alt="Selenium" />
+          </section>
+
+          <section>
+            <h2>GUI - Page Object</h2>
+
+            <img class="white-background"
+                 src="img/Page_Object.jpg" alt="Hierarchia dziedziczenia dla wzorca PageObject" />
+
+            <ul>
+              <li>Odzwierciedlenie strony w kodzie</li>
+              <li>Relacja dziedziczenia</li>
+              <li>Klasa bazowa - ogół</li>
+              <li>Klasa pochodna - szczegół</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>GUI - Selektory</h2>
+
+            <pre>
+              <code>&lt;div class="container"&gt;
+  &lt;label&gt;&lt;input id="option" type="checkbox" /&gt;Opcja&lt;/label&gt;
+  &lt;input type="submit" value="Submit" /&gt;
+&lt;/div&gt;</code>
+            </pre>
+
+            <ul>
+              <li>
+                CSS
+                <ul>
+                  <li><code>#option</code></li>
+                  <li><code>div.container</code></li>
+                  <li><code>input[type='submit']</code></li>
+                </ul>
+              </li>
+              <li>
+                XPath
+                <ul>
+                  <li><code>/div/label/input</code></li>
+                  <li><code>/div[contains(@class, 'container')]</code></li>
+                  <li><code>/*[contains(text(), 'Opcja')]</code></li>
+                </ul>
+              </li>
+            </ul>
+          </section>
+
+          <section class="assignment">
+            <h1>Zadanie</h1>
+
+            <time id="gui-tests-assignment" class="countdown">
+              <span class="hours">00</span>:<span class="minutes">30</span>:<span class="seconds">00</span>
+            </time>
+
+            <script>
+              (function () {
+                "use strict";
+
+                var element = document.getElementById("gui-tests-assignment");
+
+                element.addEventListener("click", createTimer(element, minutes(30)));
+              } ());
+            </script>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section>
+            <h2>Specification By Example</h2>
+            <h3><i>Acceptance Test-Driven Development</i></h3>
+
+            <ul>
+              <li>Podobne podejście jak <strong>BDD</strong></li>
+              <li>Wykonywalna specyfikacja w formie przykładów uruchamiająca kod</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Executable Specification</h2>
+            <h3>Fitnesse</h3>
+
+            <img src="img/Fitnesse.gif" alt="Fitnesse Tool" />
+          </section>
+
+          <section class="solution">
+            <h2>Korzyści płynące z automatyzacji</h2>
+
+            <ul>
+              <li>Agile stawia na automatyzację.</li>
+              <li>Możliwość przetestowania wielu zestawów danych.</li>
+              <li>Minimalizacja żmudnej pracy.</li>
+              <li>Szybka informacja zwrotna (<strong>GO / NO GO</strong>).</li>
+            </ul>
+          </section>
+
+        </section>
+
+         <section>
+
+          <section>
+            <h2>Automatyzacja środowiska</h2>
+          </section>
+
+          <section>
+            <h2>Po co osobne środowisko testowe?</h2>
+
+            <ul>
+              <li>'U mnie działa'!</li>
+              <li>Czasochłonne stawianie środowiska dla nowego pracownika</li>
+              <li>Zarządanie konfiguracją</li>
+              <li>Środowisko powinno być (mniejszą) kopią środowiska produkcyjnego</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Continuous Integration</h2>
+            <ul>
+              <li>automatyczne buildy</li>
+              <li>automatyczne testy</li>
+              <li>automatyczne wdrożenie? (CD) </li>
+            </ul>
+            <img class="big white-background"
+                 src="img/continuous-delivery-deployment-sm.jpg"
+                 alt="Continuous integration" />
+            <p>
+            <a href="http://blog.crisp.se/2013/02/05/yassalsundman/continuous-delivery-vs-continuous-deployment">http://blog.crisp.se/2013/02/05/yassalsundman/continuous-delivery-vs-continuous-deployment</a>
+            </p>
+          </section>
+
+          <section>
+            <h2>Wirtualizacja środowiska</h2>
+            <ul>
+              <li>VirtualBox, VMWare, Hyper-V</li>
+              <li>Vagrant</li>
+              <li>Docker</li>
+              <li>IaaC / DevOps</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Provisioning</h2>
+            <ul>
+              <li>Chef/Puppet/Ansible/etc.</li>
+              <li>Npm/Choco/Bundle/etc.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Przykładowa konfiguracja vagranta</h3>
+            <pre><code>Vagrant.configure(2) do |config|
+  config.vm.box = "win7IE10_with_winRM"
+  config.vm.box_url = "http://aka.ms/vagrant-win7-ie10"
+  ...
+  config.vm.network :forwarded_port, guest: 5985, host: 55985,
+                    id: "winrm", auto_correct: true
+  config.vm.network "private_network"
+  ...
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "1024"
+    vb.cpus = 2
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+  end
+  ...
+  config.vm.provision "shell", inline: "choco install ruby1.9 -y"
+  config.vm.provision "shell", inline: "choco install ruby.devkit -y"
+  ...
+end         </code></pre>
+          </section>
+
+        </section>
+
+        <section>
+
+          <section>
+            <h2>Dziękujemy za uwagę!</h2>
+
+            <h4><em>Linki dla ciekawskich: </em></h4>
+
+            <ul class="links">
+              <li>
+                <a href="http://creativecommons.org/licenses/by-nd/3.0/pl">
+                  Licencja prezentacji
+                </a>
+              </li>
+              <li>
+                <a href="http://specificationbyexample.com">
+                  Specification by Example
+                </a>
+              </li>
+              <li>
+                <a href="http://www.amazon.com/Succeeding-Agile-Software-Development-Using/dp/0321579364">
+                  Succeeding with Agile
+                </a>,
+                <a href="http://www.amazon.com/User-Stories-Applied-Software-Development/dp/0321205685">
+                  User Stories Applied
+                </a>
+              </li>
+              <li>
+                <a href="http://docs.seleniumhq.org">
+                  Selenium
+                </a>,
+                <a href="http://www.fitnesse.org">
+                  Fitnesse
+                </a>
+              </li>
+              <li>
+                <a href="http://cukes.info">
+                  Cucumber
+                </a>,
+                <a href="http://jnicklas.github.io/capybara">
+                  Capybara
+                </a>
+              </li>
+            </ul>
+          </section>
+
+        </section>
+
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script src="js/svg-mover.js"></script>
+
+    <script>
+      var BLUE = "#63ABF0",
+          RED = "#FA5F0C",
+          GREEN = "#52A617",
+          YELLOW = "#FFC03C";
+
+      Function.prototype.curry = function() {
+        var fn = this,
+            args = [].slice.call(arguments);
+
+        return function() {
+          return fn.apply(this, args.concat([].slice.call(arguments)));
+        };
+      };
+
+      function getArrayOfDomElements(selector) {
+        return [].slice.call(document.querySelectorAll(selector));
+      }
+
+      function applyColor(color, element) {
+        element.setAttribute("data-background", color);
+      }
+
+      getArrayOfDomElements(".theory").forEach(applyColor.curry(BLUE));
+      getArrayOfDomElements(".solution").forEach(applyColor.curry(GREEN));
+      getArrayOfDomElements(".break").forEach(applyColor.curry(RED));
+      getArrayOfDomElements(".assignment").forEach(applyColor.curry(YELLOW));
+
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: "default",
+        transition: "slide",
+        transitionSpeed: "fast",
+        backgroundTransition: "linear",
+
+        // key bindings for right/left arrow (for remote presenter)
+        //keyboard: {
+        //  39: 'next',
+        //  37: 'prev'
+        //},
+
+        dependencies: [
+          {
+            src: "lib/js/classList.js",condition: function() { return !document.body.classList; }
+          },
+          {
+            src: "plugin/highlight/highlight.js", async: true, callback: function() { hljs.initHighlightingOnLoad(); }
+          },
+          {
+            src: "plugin/zoom-js/zoom.js", async: true, condition: function() { return !!document.body.classList; }
+          },
+          {
+            src: "plugin/notes/notes.js", async: true, condition: function() { return !!document.body.classList; }
+          },
+          {
+            src: "socket.io/socket.io.js", async: true
+          },
+          {
+            src: "plugin/notes-server/client.js", async: true
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>
