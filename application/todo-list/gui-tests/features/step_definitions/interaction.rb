@@ -11,7 +11,8 @@ Given(/^I clicked (.+?)$/) do |name|
 end
 
 Given(/^I cleared (.+?)$/) do |name|
-  @page.type("", name)
+  # Zadanie GUI_3:
+  # TODO: Zaimplementuj mechanizm czyszczenia pola tekstowego.
 end
 
 When(/^I click (.+?)$/) do |name|
@@ -47,7 +48,7 @@ Then(/^I should see (\d+) "([^"]+)" product to buy/) do |quantity, name|
   @session = @page.getSession()
   element = @session.find(
       :xpath,
-      "//li[@class='task-list__task  cf' and ./span[contains(text(),#{name})] and ./span[contains(text(),#{quantity})]]")
+      "//li ? [contains(text(),#{name})] and coś z #{quantity})]]")
   element.find(:xpath, "//label[contains(text(),'Buy')]")
 
 

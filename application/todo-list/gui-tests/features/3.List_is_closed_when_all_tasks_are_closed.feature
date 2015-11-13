@@ -1,3 +1,23 @@
+# Zadanie GUI_3:
+#
+# Należy uzupełnić kroki z listy która juz istnieje.
+# Aby odnaleźć zaimplementowane kroki, należy zainteresować się ściągawką lub użyć skrótu klawiszowego ... ;)
+# lub otworzyć ploki:
+#   - 'gui-tests/features/step_definitions/*.rb'
+#
+# Przy zrozumieniu logiki pomogą… Ci pliki:
+#   - 'app/models/list.rb'
+#   - 'app/models/task.rb'
+#
+# Proszę spojrzeć jeszcze do plików:
+#   - 'gui-tests/features/pages/TaskListPage.rb'
+#   - 'gui-tests/features/step_definitions/interaction.rb'
+#
+# Tam znajdziesz resztę zadania.
+#
+# Baw się dobrze!
+# W razie problemów - nie krępuj się, zapytaj. :)
+
 Feature: Shopping list stays open when not all product bought
   As a Matylda
   I want to see not bought products from my list
@@ -9,12 +29,12 @@ Feature: Shopping list stays open when not all product bought
     And I am on lists page
     And I add "ASAP shopping" list
     And I opened "ASAP shopping"
-    And I add 4 "beers" product
-    And I add 10 "eggs" product
-    When I buy "beers" and mark this on my list
+    And ...
+    And ...
+    When ...
     And I can`t buy eggs as they`ve already sold, so I can just drink beer for the morning breakfast
     And I go to lists page
-    Then I should see "Lists for matylda"
-    And I should see "ASAP shopping"
-    When I opened "ASAP shopping"
-    Then I should see 10 "eggs" product to buy
+    Then I should (not see?) see "Lists for matylda"
+    And ...
+    When ...
+    Then I should see ...
