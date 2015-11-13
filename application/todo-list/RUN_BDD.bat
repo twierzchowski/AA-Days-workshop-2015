@@ -1,2 +1,1 @@
-bundle exec cucumber features -c -t @bdd4
-
+bundle exec cucumber features -c -t ~@skip
