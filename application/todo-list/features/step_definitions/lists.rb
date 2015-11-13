@@ -86,8 +86,10 @@ Then(/^"([^"]+)" should has today's date$/) do |listName|
   List.where(:name => listName).first.date.should == Date.today
 end
 
-Then(/^"([^"]+)" has (\d+) products? inside$/) do |listName, productsNumber|
-  List.where(:name => listName).first.products.count.should == productsNumber.to_i
+#Zadanie BDD_3: Napisz poprawne wyrażenie regularne.
+Then(/^????????????????$/) do |listName, productsNumber|
+  #Zadanie BDD_3:
+  # TODO: Wybierz listę o określonej nazwie i zweryfikuj, że ilość produktów jest zgodna z paramterem testu.
 end
 
 Then(/^"([^"]+)" should be in repository$/) do |listName|
