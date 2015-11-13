@@ -5,6 +5,6 @@ Feature: User can log in to the account
 
   @test_gui_1
   Scenario: Log in to the application
-    Given I am on log in page
-    When I enter correct login "matylda" with password "test"
-    Then I should see "Lists for matylda"
+    Given I am on "login" page
+    When I enter correct login "matylda" with password "tezt"
+    Then I should see "Lists for matyld"
