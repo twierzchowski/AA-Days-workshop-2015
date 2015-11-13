@@ -12,10 +12,10 @@ Given(/^there is one shopping list named "([^"]+)" with (\d+) bought random prod
 end
 
 When(/^"([^"]+)" will be reopened$/) do |listName|
-  # Zadanie BDD_5:
-  #
-  # TODO: Implementacja ponownego otwierania listy.
-  #       Pomoc znajdziesz na ściądze i w module 'app/models/list.rb'.
+  list = List.where(:name => listName).first
+
+  list.reopen!
+  list.save!
 end
 
 Then(/^all products on "([^"]+)" should be not signed as bought$/) do |listName|
