@@ -20,7 +20,7 @@ Given(/^there is one authenticated user "([^"]+)" with password "([^"]+)"$/) do 
 end
 
 When(/^"([^"]+)" account is created with random password$/) do |username|
-  User.create!(:user => username, :pasword => random_pasword())
+  User.create!(:username => username, :password => random_password())
 end
 
 When(/^"([^"]+)" log out$/) do |username|
