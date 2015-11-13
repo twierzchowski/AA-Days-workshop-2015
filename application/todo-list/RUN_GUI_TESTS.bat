@@ -1,4 +1,4 @@
-for %%A in (test_gui_1 test_gui_2 test_gui_3) do call :run %%A
+for %%A in (test_gui_2) do call :run %%A
 exit /b 0
 
 :run
