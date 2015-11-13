@@ -10,10 +10,11 @@ Feature: Product Management
     Then 1 product in "Party shopping list" is available
     And "beer" item should be opened
 
+    @bdd2
   Scenario: Product should has a date
-    Given there is one shopping list named "Non-empty list" with one item named "Item on the list"
-    When "Non-empty list" will be opened
-    Then "Item on the list" item should have today's date
+    Given ...
+    When ...
+    Then ...
 
   Scenario: Product should have a default state "Open"
     Given there is one shopping list named "Non-empty list" with one item named "Opened by default"
